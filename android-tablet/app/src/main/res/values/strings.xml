@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MN Tablet</string>
+
+    <string name="config_title">MN Tablet Setup</string>
+    <string name="config_hint">Enter your desktop server URL (same network). Example: http://192.168.1.4:3500</string>
+    <string name="server_url_label">Server URL</string>
+    <string name="server_url_hint">http://192.168.1.4:3500</string>
+    <string name="server_url_required">Server URL is required</string>
+
+    <string name="pin_label">Admin PIN (for hidden settings)</string>
+    <string name="pin_hint">0000</string>
+    <string name="pin_invalid">PIN must be 4-8 digits</string>
+    <string name="settings_saved">Saved</string>
+
+    <string name="save_and_open">Save and Open App</string>
+    <string name="pin_required_title">Admin PIN Required</string>
+    <string name="pin_required_message">Enter PIN to open settings.</string>
+    <string name="enter_admin_pin">PIN</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+</resources>
+

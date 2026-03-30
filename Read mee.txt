@@ -1,0 +1,10 @@
+
+Əvvəl test üçün aç:
+cd C:\Users\Elloni-PC1\Desktop\MN
+npm.cmd run desktop:dev
+Hər şey yaxşıdırsa build et:
+npm.cmd run desktop:dist
+Sonra dist qovluğundakı yeni faylları istifadə et:
+...Setup...exe (quraşdırmalı)
+...Portable...exe (quraşdırmasız)
+Yəni index.html-i ayrıca köçürməyə ehtiyac yoxdur, desktop:dist özü yeni index ilə EXE-ni yenidən yığır

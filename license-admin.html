@@ -1,0 +1,1511 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MN Sushi - Lisenziya Admin Panel</title>
+  <style>
+    :root{
+      --bg:#090b10;
+      --bg-soft:#0f131d;
+      --card:#121826;
+      --card-2:#171f2f;
+      --text:#e7ecf7;
+      --muted:#9ca7be;
+      --border:#26324c;
+      --accent:#2dd4bf;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --radius:14px;
+      --shadow:0 18px 44px rgba(0,0,0,.32);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:radial-gradient(1200px 700px at 85% -10%,#103047 0%,var(--bg) 56%);color:var(--text);font-family:"DM Sans","Segoe UI",sans-serif}
+    body{min-height:100vh}
+    .hidden{display:none !important}
+    .wrap{max-width:1400px;margin:0 auto;padding:18px 16px 22px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(135deg,var(--card),var(--card-2));box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand-logo{width:44px;height:44px;border-radius:10px;background:#0d1320 center/cover no-repeat;border:1px solid var(--border);flex:0 0 auto}
+    .brand-text{min-width:0}
+    .brand-title{font-size:18px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand-sub{font-size:12px;color:var(--muted)}
+    .top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted);background:rgba(0,0,0,.16)}
+    .pill.ok{color:#9ef6c4;border-color:#0f7e42;background:rgba(10,92,48,.2)}
+    .btn{border:1px solid var(--border);background:#151e30;color:var(--text);padding:10px 12px;border-radius:10px;cursor:pointer;font-family:inherit;font-size:13px}
+    .btn:hover{border-color:#3a4c72}
+    .btn.primary{background:linear-gradient(135deg,#1db59c,#13806e);border-color:#0f8e78;color:#05130f;font-weight:800}
+    .btn.warn{background:linear-gradient(135deg,#f59e0b,#cf7b00);border-color:#d18603;color:#2d1d00;font-weight:800}
+    .btn.bad{background:linear-gradient(135deg,#ef4444,#b91c1c);border-color:#b91c1c;color:#fff;font-weight:800}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;margin-top:14px}
+    .col{display:flex;flex-direction:column;gap:14px;min-width:0}
+    .card{background:linear-gradient(140deg,var(--card),var(--card-2));border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);min-width:0}
+    .card h3{margin:0 0 10px;font-size:14px;letter-spacing:.3px}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .row-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .grow{flex:1 1 auto;min-width:0}
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+    input,select,textarea{width:100%;background:#0d1320;border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 11px;font-family:inherit;font-size:13px}
+    textarea{min-height:80px;resize:vertical}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(45,212,191,.18)}
+    input[type="color"]{padding:4px;height:38px}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .stat{background:#0d1320;border:1px solid var(--border);border-radius:12px;padding:10px}
+    .stat .k{font-size:11px;color:var(--muted)}
+    .stat .v{font-size:21px;font-weight:800;margin-top:2px}
+    .table-wrap{max-height:430px;overflow:auto;border:1px solid var(--border);border-radius:12px}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left;vertical-align:top}
+    th{position:sticky;top:0;background:#0e1524;color:#abc0e9;z-index:1}
+    tr{cursor:pointer}
+    tr:hover{background:rgba(255,255,255,.03)}
+    tr.active{background:rgba(45,212,191,.13)}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:2px 7px;border-radius:999px;font-size:11px;border:1px solid var(--border)}
+    .badge.ok{color:#8bf4b8;border-color:#1b9f57}
+    .badge.bad{color:#ff8f8f;border-color:#bf2e2e}
+    .device-list{max-height:180px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:6px}
+    .device-row{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px;border-bottom:1px dashed rgba(255,255,255,.06)}
+    .device-row:last-child{border-bottom:none}
+    .device-meta{min-width:0}
+    .device-id{font-size:12px;font-weight:700;word-break:break-all}
+    .device-sub{font-size:11px;color:var(--muted)}
+    .hint{font-size:11px;color:var(--muted);margin-top:6px}
+    .status{font-size:12px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:#0d1320;color:var(--muted)}
+    .status.ok{color:#8bf4b8;border-color:#1b9f57}
+    .status.bad{color:#ff8f8f;border-color:#bf2e2e}
+    .login-gate{position:fixed;inset:0;background:rgba(4,7,12,.84);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}
+    .login-box{width:min(430px,96vw);background:linear-gradient(140deg,var(--card),var(--card-2));border:1px solid var(--border);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+    .login-title{font-size:20px;font-weight:900;margin-bottom:6px}
+    .login-sub{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.4}
+    .sep{height:1px;background:rgba(255,255,255,.08);margin:10px 0}
+    .logs{max-height:180px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:8px;background:#0d1320}
+    .log-row{padding:7px 8px;border-bottom:1px dashed rgba(255,255,255,.08);font-size:12px}
+    .log-row:last-child{border-bottom:none}
+    .log-row.ok{color:#9ef6c4}
+    .log-row.bad{color:#ff8f8f}
+    .log-time{font-size:11px;color:var(--muted);margin-right:6px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    .badge.root{font-size:10px;padding:1px 6px}
+    .panel-note{font-size:11px;color:var(--muted);line-height:1.45;margin-top:6px}
+    .logo-preview{width:58px;height:58px;border-radius:12px;border:1px solid var(--border);background:#0d1320 center/cover no-repeat}
+    .file-btn{position:relative;overflow:hidden}
+    .file-btn input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
+    #cursorTrailLayer{position:fixed;inset:0;pointer-events:none;z-index:11000}
+    .cursor-trail-dot{position:fixed;left:0;top:0;transform:translate(-50%,-50%);pointer-events:none;animation:trailFade 800ms ease-out forwards}
+    .cursor-trail-dot.trail-glow{border-radius:50%;background:radial-gradient(circle,var(--trail-color) 0%,rgba(255,255,255,.45) 45%,rgba(255,255,255,0) 75%);box-shadow:0 0 14px var(--trail-color)}
+    .cursor-trail-dot.trail-spark{border-radius:3px;background:var(--trail-color);box-shadow:0 0 10px var(--trail-color);transform:translate(-50%,-50%) rotate(45deg)}
+    @keyframes trailFade{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(.2)}}
+    body[data-cursor-mode="pointer"] *{cursor:pointer}
+    body[data-cursor-mode="crosshair"] *{cursor:crosshair}
+    body[data-cursor-mode="grab"] *{cursor:grab}
+    body[data-cursor-mode="pointer"] input,body[data-cursor-mode="crosshair"] input,body[data-cursor-mode="grab"] input,
+    body[data-cursor-mode="pointer"] textarea,body[data-cursor-mode="crosshair"] textarea,body[data-cursor-mode="grab"] textarea{cursor:text}
+    @media (max-width:1150px){
+      .grid{grid-template-columns:1fr}
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .row-3{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div id="cursorTrailLayer"></div>
+
+  <div id="loginGate" class="login-gate">
+    <div class="login-box">
+      <div class="login-title">🔐 Lisenziya Admin Giris</div>
+      <div class="login-sub">Bu panelde lisenziya yaratmaq, redakte etmek, cihaz limitlerini idare etmek, tema/logo/kursor ayarlarini deyismek ve admin parolunu yenilemek mumkundur.</div>
+      <label>Admin parolu</label>
+      <input id="loginPassword" type="password" placeholder="Admin parolunu daxil et" autocomplete="current-password">
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" onclick="adminLogin()">Daxil ol</button>
+      </div>
+      <div id="loginMsg" class="status" style="margin-top:10px">Parol gozlenilir...</div>
+      <div class="hint">Ilk giris ucun standart parol: <span class="mono">MN-ADMIN-2026</span> (sonra panelden deyise bilersiniz)</div>
+    </div>
+  </div>
+
+  <div id="appShell" class="wrap hidden">
+    <div class="topbar">
+      <div class="brand">
+        <div id="brandLogo" class="brand-logo"></div>
+        <div class="brand-text">
+          <div class="brand-title">MN Sushi - Lisenziya Idareetme</div>
+          <div class="brand-sub">Chrome panel | Firebase Realtime Database</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span id="dbStatePill" class="pill">Bulud yoxlanir...</span>
+        <span id="rootPill" class="pill">Root: rrt_licenses</span>
+        <button class="btn" onclick="loadLicenses()">Yenile</button>
+        <button class="btn" onclick="clearLogs()">Jurnali temizle</button>
+        <button class="btn bad" onclick="logoutAdmin()">Cixis</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="col">
+        <div class="card">
+          <h3>☁️ Firebase baglanti ve root secimi</h3>
+          <div class="row-2">
+            <div>
+              <label>Database URL</label>
+              <input id="dbUrlInput" placeholder="https://...firebaseio.com">
+            </div>
+            <div>
+              <label>Root path</label>
+              <select id="rootSelect">
+                <option value="rrt_licenses">rrt_licenses</option>
+                <option value="rr_licenses">rr_licenses</option>
+                <option value="licenses">licenses</option>
+                <option value="__auto__">AUTO (3 root birden oxu)</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary" onclick="saveDbPrefs()">Yaddasa yaz</button>
+            <button class="btn" onclick="loadLicenses()">Lisenziyalari cek</button>
+          </div>
+          <div class="panel-note">Qeyd: Panel anonymous auth ile avtomatik token alir. Rules auth teleb edirse de, buradan el ile token daxil etmeye ehtiyac yoxdur.</div>
+        </div>
+
+        <div class="card">
+          <h3>📊 Umumi statistika</h3>
+          <div class="stats">
+            <div class="stat"><div class="k">Umumi lisenziya</div><div id="stTotal" class="v">0</div></div>
+            <div class="stat"><div class="k">Aktiv</div><div id="stActive" class="v">0</div></div>
+            <div class="stat"><div class="k">Muddeti bitmis</div><div id="stExpired" class="v">0</div></div>
+            <div class="stat"><div class="k">Baglanmis / Deaktiv</div><div id="stInactive" class="v">0</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row" style="justify-content:space-between">
+            <h3>🧾 Lisenziya siyahisi</h3>
+            <span class="muted small" id="listCountInfo">0 qeyd</span>
+          </div>
+          <div class="row" style="margin-bottom:8px">
+            <input id="searchInput" class="grow" placeholder="Axtar: acar, muessise, status..." oninput="renderTable()">
+            <select id="filterStatus" onchange="renderTable()">
+              <option value="all">Butun statuslar</option>
+              <option value="active">Yalniz aktiv</option>
+              <option value="inactive">Yalniz deaktiv</option>
+              <option value="expired">Yalniz bitmis</option>
+            </select>
+            <button class="btn" onclick="loadLicenseByKeyFromInput()">Acarla oxu</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Acar</th>
+                  <th>Muessise</th>
+                  <th>Status</th>
+                  <th>Bitme</th>
+                  <th>Cihaz</th>
+                  <th>Root</th>
+                </tr>
+              </thead>
+              <tbody id="licenseTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Yenileme Paneli (hazirliq)</h3>
+          <div class="row-3">
+            <div>
+              <label>Kanal</label>
+              <select id="upChannel">
+                <option value="production">production</option>
+                <option value="beta">beta</option>
+              </select>
+            </div>
+            <div>
+              <label>Yeni versiya</label>
+              <input id="upVersion" placeholder="1.2.0">
+            </div>
+            <div>
+              <label>Minimum icaze verilen versiya</label>
+              <input id="upMinVersion" placeholder="1.0.0">
+            </div>
+          </div>
+          <div class="row-3" style="margin-top:8px">
+            <div>
+              <label>Force update tarixi</label>
+              <input id="upForceAfter" type="datetime-local">
+            </div>
+            <div>
+              <label>Grace period (gun)</label>
+              <input id="upGraceDays" type="number" min="0" max="365" value="7">
+            </div>
+            <div>
+              <label>Policy</label>
+              <select id="upPolicy">
+                <option value="optional">optional</option>
+                <option value="recommended">recommended</option>
+                <option value="forced">forced</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:8px">
+            <label>Github release URL / installer URL</label>
+            <input id="upDownloadUrl" placeholder="https://github.com/.../releases/tag/v1.2.0">
+          </div>
+          <div style="margin-top:8px">
+            <label>Yenileme qeydi (release notes)</label>
+            <textarea id="upNotes" placeholder="Neler deyisdi..."></textarea>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn" onclick="newUpdateDraft()">Yeni draft</button>
+            <button class="btn primary" onclick="saveUpdatePlan()">Yenilemeni yayimla</button>
+            <button class="btn" onclick="loadUpdatePlans()">Yenilemeleri cek</button>
+            <button class="btn bad" onclick="deleteUpdatePlan()">Kanal qaydini sil</button>
+          </div>
+          <div id="updateMsg" class="status" style="margin-top:10px">Yenileme paneli hazirdir</div>
+          <div class="hint">Burda update siyaseti Firebase-e yazilir. Esas proqram da bu paneldeki qaydalari oxuyub yenileme statusunu gostere bilir.</div>
+          <div class="sep"></div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kanal</th>
+                  <th>Versiya</th>
+                  <th>Policy</th>
+                  <th>Force after</th>
+                  <th>Grace</th>
+                </tr>
+              </thead>
+              <tbody id="updateTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card">
+          <h3>🛠️ Lisenziya redaktesi</h3>
+          <div class="row-2">
+            <div>
+              <label>Lisenziya acari</label>
+              <input id="edKey" placeholder="MN-2026-XXXX-0001">
+            </div>
+            <div>
+              <label>Yazilacaq root</label>
+              <select id="edRoot">
+                <option value="rrt_licenses">rrt_licenses</option>
+                <option value="rr_licenses">rr_licenses</option>
+                <option value="licenses">licenses</option>
+              </select>
+            </div>
+          </div>
+          <div class="row-2" style="margin-top:8px">
+            <div>
+              <label>Status</label>
+              <select id="edStatus">
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
+                <option value="suspended">suspended</option>
+              </select>
+            </div>
+            <div>
+              <label>Max devices</label>
+              <input id="edMaxDevices" type="number" min="1" step="1" value="1">
+            </div>
+          </div>
+          <div class="row-2" style="margin-top:8px">
+            <div>
+              <label>Muessise adi</label>
+              <input id="edBusiness" placeholder="MN Sushi">
+            </div>
+            <div>
+              <label>Bitme tarixi</label>
+              <input id="edExpires" type="datetime-local">
+            </div>
+          </div>
+          <div style="margin-top:8px">
+            <label>Qeyd</label>
+            <textarea id="edNote" placeholder="Qisa qeyd..."></textarea>
+          </div>
+          <div style="margin-top:8px">
+            <label>Extra JSON (opsional)</label>
+            <textarea id="edExtra" placeholder='{"plan":"pro","contact":"..." }'></textarea>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn" onclick="newLicenseDraft()">Yeni</button>
+            <button class="btn" onclick="generateLicenseKey()">Acar yarat</button>
+            <button class="btn primary" onclick="saveLicense()">Yaddasa yaz</button>
+            <button class="btn warn" onclick="resetDevices()">Cihazlari sifirla</button>
+            <button class="btn bad" onclick="deleteLicense()">Sil</button>
+          </div>
+          <div id="editorMsg" class="status" style="margin-top:10px">Hazirdir</div>
+          <div class="hint">Lisenziya acari deyisdirilse kohne acar ayri qeyd kimi qalacaq. Tam yer deyismek isteyirsinizse kohne acari silin.</div>
+          <div class="sep"></div>
+          <h3 style="margin-top:0">🔗 Bagli cihazlar</h3>
+          <div id="deviceList" class="device-list"></div>
+        </div>
+
+        <div class="card">
+          <h3>🎨 Interfeys / Tema / Kursor / Logo</h3>
+          <div class="row-2">
+            <div>
+              <label>Tema</label>
+              <select id="uiTheme">
+                <option value="dark">Dark</option>
+                <option value="ocean">Ocean</option>
+                <option value="emerald">Emerald</option>
+                <option value="light">Light</option>
+              </select>
+            </div>
+            <div>
+              <label>Accent rengi</label>
+              <input id="uiAccent" type="color" value="#2dd4bf">
+            </div>
+          </div>
+          <div class="row-2" style="margin-top:8px">
+            <div>
+              <label>Kursor modu</label>
+              <select id="uiCursorMode">
+                <option value="default">Default</option>
+                <option value="pointer">Pointer</option>
+                <option value="crosshair">Crosshair</option>
+                <option value="grab">Grab</option>
+              </select>
+            </div>
+            <div>
+              <label>Iz effekti</label>
+              <select id="uiTrailMode">
+                <option value="none">Off</option>
+                <option value="glow">Glow</option>
+                <option value="spark">Spark</option>
+              </select>
+            </div>
+          </div>
+          <div class="row-3" style="margin-top:8px">
+            <div>
+              <label>Iz rengi</label>
+              <input id="uiTrailColor" type="color" value="#5f86ff">
+            </div>
+            <div>
+              <label>Iz olcusu</label>
+              <input id="uiTrailSize" type="number" min="4" max="48" value="18">
+            </div>
+            <div>
+              <label>Iz davam (ms)</label>
+              <input id="uiTrailLife" type="number" min="120" max="2200" value="800">
+            </div>
+          </div>
+          <div class="sep"></div>
+          <label>Logo URL</label>
+          <input id="uiLogoUrl" placeholder="https://.../logo.png">
+          <div class="row" style="margin-top:8px">
+            <div id="logoPreview" class="logo-preview"></div>
+            <button class="btn file-btn">Fayl sec <input id="uiLogoFile" type="file" accept="image/*"></button>
+            <button class="btn" onclick="clearLogo()">Logonu temizle</button>
+            <button class="btn primary" onclick="saveUiPrefs()">UI ayarlarini saxla</button>
+          </div>
+          <div class="hint">Bu ayarlar bu admin panel ucundur. Isterseniz sonradan esas proqrama da eyni formal logika kecire bilerik.</div>
+        </div>
+
+        <div class="card">
+          <h3>🔑 Admin parolu yenile</h3>
+          <div class="row-3">
+            <div>
+              <label>Hazirki parol</label>
+              <input id="pwdCurrent" type="password" autocomplete="current-password">
+            </div>
+            <div>
+              <label>Yeni parol</label>
+              <input id="pwdNew" type="password" autocomplete="new-password">
+            </div>
+            <div>
+              <label>Yeni parol (tekrar)</label>
+              <input id="pwdNew2" type="password" autocomplete="new-password">
+            </div>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn primary" onclick="changeAdminPassword()">Parolu yenile</button>
+          </div>
+          <div id="pwdMsg" class="status" style="margin-top:10px">Parol blokunda deyisiklik edilmeyib</div>
+        </div>
+
+        <div class="card">
+          <h3>📋 Emeliyyat jurnali</h3>
+          <div id="logsBox" class="logs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const ROOTS = ['rrt_licenses', 'rr_licenses', 'licenses'];
+    const DEFAULT_DB_URL = 'https://mn-sushi-default-rtdb.europe-west1.firebasedatabase.app';
+    const FIREBASE_WEB_API_KEY = 'AIzaSyAUcOzvZM0a8XSNA1jp1jOJd3qqrZinZbM';
+    const DEFAULT_PASSWORD = 'MN-ADMIN-2026';
+
+    const LS = {
+      adminHash: 'mn_license_admin_hash_v1',
+      ui: 'mn_license_admin_ui_v1',
+      db: 'mn_license_admin_db_v1',
+      logs: 'mn_license_admin_logs_v1'
+    };
+    const SS = {
+      sessionUntil: 'mn_license_admin_session_until'
+    };
+
+    const DEFAULT_UI = {
+      theme: 'dark',
+      accent: '#2dd4bf',
+      cursorMode: 'default',
+      trailMode: 'none',
+      trailColor: '#5f86ff',
+      trailSize: 18,
+      trailLife: 800,
+      logoUrl: ''
+    };
+
+    const state = {
+      records: [],
+      selectedId: '',
+      logs: [],
+      dbUrl: DEFAULT_DB_URL,
+      rootMode: 'rrt_licenses',
+      updates: [],
+      selectedUpdateChannel: '',
+      restIdToken: '',
+      restTokenExpireAt: 0,
+      restAuthUnavailable: false,
+      ui: { ...DEFAULT_UI }
+    };
+
+    let trailLastTime = 0;
+    let trailLastX = -9999;
+    let trailLastY = -9999;
+
+    function byId(id){
+      return document.getElementById(id);
+    }
+    function nowIso(){
+      return new Date().toISOString();
+    }
+    function nowLabel(){
+      return new Date().toLocaleString('az-AZ');
+    }
+    function escHtml(v){
+      return String(v === undefined || v === null ? '' : v)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+    function normalizeDbUrl(v){
+      return String(v || '').trim().replace(/\/+$/, '');
+    }
+    function normalizeKey(v){
+      return String(v || '')
+        .toUpperCase()
+        .replace(/[‐‑‒–—―]/g, '-')
+        .replace(/[^A-Z0-9-]/g, '')
+        .replace(/-{2,}/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+    function parseDateMs(v){
+      if(!v) return 0;
+      if(typeof v === 'number') return Number.isFinite(v) ? v : 0;
+      const t = new Date(String(v)).getTime();
+      return Number.isFinite(t) ? t : 0;
+    }
+    function toLocalInputValue(isoLike){
+      const ms = parseDateMs(isoLike);
+      if(!ms) return '';
+      const d = new Date(ms);
+      const pad = (n)=>String(n).padStart(2,'0');
+      const year = d.getFullYear();
+      const mon = pad(d.getMonth() + 1);
+      const day = pad(d.getDate());
+      const h = pad(d.getHours());
+      const m = pad(d.getMinutes());
+      return `${year}-${mon}-${day}T${h}:${m}`;
+    }
+    function fromLocalInputValue(v){
+      if(!v) return '';
+      const d = new Date(v);
+      const t = d.getTime();
+      if(!Number.isFinite(t)) return '';
+      return d.toISOString();
+    }
+    function isExpiredRecord(rec){
+      const ms = parseDateMs(rec && rec.expiresAt);
+      return !!ms && Date.now() > ms;
+    }
+    function safeNumber(v, fallback){
+      const n = Number(v);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function setStatusBox(el, text, kind){
+      if(!el) return;
+      el.textContent = text || '';
+      el.classList.remove('ok', 'bad');
+      if(kind === 'ok') el.classList.add('ok');
+      if(kind === 'bad') el.classList.add('bad');
+    }
+
+    function loadLogs(){
+      try{
+        const parsed = JSON.parse(localStorage.getItem(LS.logs) || '[]');
+        state.logs = Array.isArray(parsed) ? parsed : [];
+      }catch(_){
+        state.logs = [];
+      }
+      renderLogs();
+    }
+    function saveLogs(){
+      localStorage.setItem(LS.logs, JSON.stringify(state.logs.slice(-1000)));
+    }
+    function pushLog(text, kind){
+      state.logs.push({ at: Date.now(), text: String(text || ''), kind: kind || '' });
+      if(state.logs.length > 1000) state.logs = state.logs.slice(-1000);
+      saveLogs();
+      renderLogs();
+    }
+    function clearLogs(){
+      state.logs = [];
+      saveLogs();
+      renderLogs();
+    }
+    function renderLogs(){
+      const box = byId('logsBox');
+      if(!box) return;
+      if(!state.logs.length){
+        box.innerHTML = '<div class="muted small">Jurnal bosdur</div>';
+        return;
+      }
+      const rows = state.logs.slice().reverse().map(item=>{
+        const kind = item.kind === 'ok' ? 'ok' : (item.kind === 'bad' ? 'bad' : '');
+        return `<div class="log-row ${kind}"><span class="log-time">${escHtml(new Date(item.at).toLocaleString('az-AZ'))}</span>${escHtml(item.text)}</div>`;
+      }).join('');
+      box.innerHTML = rows;
+    }
+
+    async function sha256(text){
+      const enc = new TextEncoder();
+      const buf = await crypto.subtle.digest('SHA-256', enc.encode(String(text || '')));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+    async function ensureAdminPassword(){
+      const existing = localStorage.getItem(LS.adminHash);
+      if(existing) return;
+      const hash = await sha256(DEFAULT_PASSWORD);
+      localStorage.setItem(LS.adminHash, hash);
+      pushLog('Ilk giris parolu quruldu', 'ok');
+    }
+    function isSessionValid(){
+      const until = safeNumber(sessionStorage.getItem(SS.sessionUntil), 0);
+      return until > Date.now();
+    }
+    function openAppShell(){
+      byId('loginGate').classList.add('hidden');
+      byId('appShell').classList.remove('hidden');
+    }
+    function openLoginGate(){
+      byId('appShell').classList.add('hidden');
+      byId('loginGate').classList.remove('hidden');
+      byId('loginPassword').value = '';
+      byId('loginPassword').focus();
+    }
+    async function adminLogin(){
+      const pass = byId('loginPassword').value || '';
+      const status = byId('loginMsg');
+      if(pass.length < 4){
+        setStatusBox(status, 'Parol qisa ola bilmez', 'bad');
+        return;
+      }
+      const savedHash = localStorage.getItem(LS.adminHash) || '';
+      const hash = await sha256(pass);
+      if(hash !== savedHash){
+        setStatusBox(status, 'Parol yanlisdir', 'bad');
+        pushLog('Admin panel girisinde ugursuz cehd', 'bad');
+        return;
+      }
+      sessionStorage.setItem(SS.sessionUntil, String(Date.now() + 12 * 60 * 60 * 1000));
+      setStatusBox(status, 'Giris ugurludur', 'ok');
+      openAppShell();
+      pushLog('Admin paneline giris edildi', 'ok');
+      await loadLicenses();
+      await loadUpdatePlans();
+    }
+    function logoutAdmin(){
+      sessionStorage.removeItem(SS.sessionUntil);
+      openLoginGate();
+      pushLog('Admin panelinden cixis edildi');
+    }
+    async function changeAdminPassword(){
+      const current = byId('pwdCurrent').value || '';
+      const next = byId('pwdNew').value || '';
+      const next2 = byId('pwdNew2').value || '';
+      const msg = byId('pwdMsg');
+      if(next.length < 6){
+        setStatusBox(msg, 'Yeni parol en azi 6 simvol olmalidir', 'bad');
+        return;
+      }
+      if(next !== next2){
+        setStatusBox(msg, 'Yeni parol tekrari ust-uste dusmur', 'bad');
+        return;
+      }
+      const savedHash = localStorage.getItem(LS.adminHash) || '';
+      const currentHash = await sha256(current);
+      if(currentHash !== savedHash){
+        setStatusBox(msg, 'Hazirki parol yanlisdir', 'bad');
+        return;
+      }
+      const newHash = await sha256(next);
+      localStorage.setItem(LS.adminHash, newHash);
+      byId('pwdCurrent').value = '';
+      byId('pwdNew').value = '';
+      byId('pwdNew2').value = '';
+      setStatusBox(msg, 'Admin parolu yenilendi', 'ok');
+      pushLog('Admin parolu yenilendi', 'ok');
+    }
+
+    function loadDbPrefs(){
+      try{
+        const parsed = JSON.parse(localStorage.getItem(LS.db) || '{}');
+        state.dbUrl = normalizeDbUrl(parsed.dbUrl || DEFAULT_DB_URL);
+        state.rootMode = String(parsed.rootMode || 'rrt_licenses');
+      }catch(_){
+        state.dbUrl = DEFAULT_DB_URL;
+        state.rootMode = 'rrt_licenses';
+      }
+      byId('dbUrlInput').value = state.dbUrl;
+      byId('rootSelect').value = state.rootMode;
+      byId('edRoot').value = state.rootMode === '__auto__' ? 'rrt_licenses' : state.rootMode;
+      updateRootPill();
+    }
+    function saveDbPrefs(){
+      const dbUrl = normalizeDbUrl(byId('dbUrlInput').value);
+      const rootMode = byId('rootSelect').value || 'rrt_licenses';
+      if(!/^https:\/\/.+/i.test(dbUrl)){
+        setStatusBox(byId('editorMsg'), 'Database URL yanlisdir (https:// ile baslamalidir)', 'bad');
+        return;
+      }
+      state.dbUrl = dbUrl;
+      state.rootMode = rootMode;
+      localStorage.setItem(LS.db, JSON.stringify({ dbUrl, rootMode }));
+      updateRootPill();
+      setStatusBox(byId('editorMsg'), 'Firebase ayarlari yadda saxlanildi', 'ok');
+      pushLog('Firebase ayarlari yenilendi', 'ok');
+    }
+    function updateRootPill(){
+      const rootLabel = state.rootMode === '__auto__' ? 'AUTO' : state.rootMode;
+      byId('rootPill').textContent = `Root: ${rootLabel}`;
+    }
+    function buildDbUrl(path, idToken){
+      const base = normalizeDbUrl(state.dbUrl || byId('dbUrlInput').value || DEFAULT_DB_URL);
+      const token = String(idToken || '').trim();
+      return token
+        ? `${base}/${path}.json?auth=${encodeURIComponent(token)}`
+        : `${base}/${path}.json`;
+    }
+    async function ensureRestAuthToken(force){
+      if(force) state.restAuthUnavailable=false;
+      if(state.restAuthUnavailable) return '';
+      try{
+        const now = Date.now();
+        if(!force && state.restIdToken && (state.restTokenExpireAt - now > 45 * 1000)){
+          return state.restIdToken;
+        }
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${encodeURIComponent(FIREBASE_WEB_API_KEY)}`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ returnSecureToken: true })
+        });
+        if(!res.ok){
+          const tx = await res.text().catch(() => '');
+          state.restAuthUnavailable=true;
+          return '';
+        }
+        const data = await res.json();
+        const idToken = String(data && data.idToken || '');
+        const expiresInSec = Math.max(60, Math.floor(safeNumber(data && data.expiresIn, 3600)));
+        if(!idToken){
+          state.restAuthUnavailable=true;
+          return '';
+        }
+        state.restIdToken = idToken;
+        state.restTokenExpireAt = now + expiresInSec * 1000;
+        return idToken;
+      }catch(_){
+        state.restAuthUnavailable=true;
+        return '';
+      }
+    }
+    async function dbRequest(method, path, body){
+      const call = async(forceAuthRefresh)=>{
+        const token = await ensureRestAuthToken(!!forceAuthRefresh);
+        const reqUrl = buildDbUrl(path, token);
+        const opt = { method, headers: { 'Content-Type': 'application/json' } };
+        if(body !== undefined) opt.body = JSON.stringify(body);
+        const res = await fetch(reqUrl, opt);
+        if(!res.ok){
+          const tx = await res.text().catch(() => '');
+          const err = new Error(`${res.status} ${res.statusText} ${tx}`.slice(0, 260));
+          err.status = res.status;
+          throw err;
+        }
+        if(method === 'DELETE') return null;
+        return await res.json().catch(() => null);
+      };
+      try{
+        return await call(false);
+      }catch(err){
+        const status = Number(err && err.status);
+        if(status === 401 || status === 403){
+          return await call(true);
+        }
+        throw err;
+      }
+    }
+
+    function toViewRecord(root, key, raw){
+      const data = (raw && typeof raw === 'object') ? raw : {};
+      const devices = (data.devices && typeof data.devices === 'object') ? data.devices : {};
+      const status = String(data.status || 'active').toLowerCase();
+      return {
+        id: `${root}::${key}`,
+        root,
+        key,
+        raw: data,
+        status,
+        businessName: String(data.businessName || data.company || data.owner || ''),
+        expiresAt: String(data.expiresAt || ''),
+        maxDevices: Math.max(1, Math.floor(safeNumber(data.maxDevices, 1))),
+        devices,
+        usedDevices: Object.keys(devices).length,
+        note: String(data.note || '')
+      };
+    }
+
+    function setDbPill(text, kind){
+      const pill = byId('dbStatePill');
+      pill.textContent = text;
+      pill.classList.remove('ok');
+      if(kind === 'ok') pill.classList.add('ok');
+    }
+
+    async function fetchLicenseByKeyAcrossRoots(licenseKey){
+      const cleanKey = normalizeKey(licenseKey);
+      if(!cleanKey) return null;
+      const roots = state.rootMode === '__auto__' ? ROOTS.slice() : [state.rootMode];
+      for(const root of roots){
+        try{
+          const one = await dbRequest('GET', `${root}/${cleanKey}`);
+          if(one && typeof one === 'object'){
+            return toViewRecord(root, cleanKey, one);
+          }
+        }catch(err){
+          const text = String(err && err.message ? err.message : err).toLowerCase();
+          if(text.includes('permission denied') || text.includes('unauthorized')) continue;
+          throw err;
+        }
+      }
+      return null;
+    }
+    async function loadLicenseByKeyFromInput(){
+      saveDbPrefs();
+      const keyCandidate = normalizeKey(byId('edKey').value || byId('searchInput').value || '');
+      if(!keyCandidate){
+        setStatusBox(byId('editorMsg'), 'Acar daxil edin (Lisenziya acari ve ya Axtar bolmesi)', 'bad');
+        return;
+      }
+      try{
+        const rec = await fetchLicenseByKeyAcrossRoots(keyCandidate);
+        if(!rec){
+          state.records = [];
+          renderStats();
+          renderTable();
+          setStatusBox(byId('editorMsg'), `Acar tapilmadi: ${keyCandidate}`, 'bad');
+          return;
+        }
+        state.records = [rec];
+        state.selectedId = rec.id;
+        renderStats();
+        renderTable();
+        selectRecord(rec.id);
+        setStatusBox(byId('editorMsg'), `Acarla oxundu: ${keyCandidate}`, 'ok');
+      }catch(err){
+        const text = String(err && err.message ? err.message : err);
+        setStatusBox(byId('editorMsg'), `Acarla oxuma xetasi: ${text}`, 'bad');
+      }
+    }
+
+    async function loadLicenses(){
+      saveDbPrefs();
+      setDbPill('Buluddan oxunur...', '');
+      const roots = state.rootMode === '__auto__' ? ROOTS.slice() : [state.rootMode];
+      const out = [];
+      const errors = [];
+      for(const root of roots){
+        try{
+          const map = await dbRequest('GET', root);
+          if(map && typeof map === 'object'){
+            Object.keys(map).forEach(key=>{
+              out.push(toViewRecord(root, key, map[key]));
+            });
+          }
+        }catch(err){
+          errors.push(`${root}: ${err.message || err}`);
+        }
+      }
+      out.sort((a,b)=>a.key.localeCompare(b.key));
+      state.records = out;
+      renderStats();
+      renderTable();
+      if(state.selectedId){
+        const found = state.records.find(x=>x.id === state.selectedId);
+        if(found) selectRecord(found.id);
+        else newLicenseDraft();
+      }else{
+        newLicenseDraft();
+      }
+      if(errors.length){
+        setDbPill('Baglanti xetasi', '');
+        const allErr = errors.join(' | ');
+        const hint = /401|permission denied|unauthorized/i.test(allErr)
+          ? `${allErr} | Firebase rules-i yoxlayin (auth != null)`
+          : allErr;
+        const keyCandidate=normalizeKey(byId('edKey').value || byId('searchInput').value || '');
+        if(!out.length && keyCandidate){
+          const single=await fetchLicenseByKeyAcrossRoots(keyCandidate);
+          if(single){
+            state.records=[single];
+            state.selectedId=single.id;
+            renderStats();
+            renderTable();
+            selectRecord(single.id);
+            setDbPill('Bulud aktiv', 'ok');
+            setStatusBox(byId('editorMsg'), `List icazesi baglidir. Acarla oxundu: ${keyCandidate}`, 'ok');
+            return;
+          }
+        }
+        setStatusBox(byId('editorMsg'), hint, 'bad');
+        pushLog(`Firebase xetasi: ${errors.join(' | ')}`, 'bad');
+      }else{
+        setDbPill('Bulud aktiv', 'ok');
+        setStatusBox(byId('editorMsg'), `${out.length} lisenziya oxundu`, 'ok');
+      }
+    }
+
+    function renderStats(){
+      const total = state.records.length;
+      let active = 0;
+      let expired = 0;
+      let inactive = 0;
+      state.records.forEach(r=>{
+        if(r.status !== 'active'){
+          inactive += 1;
+          return;
+        }
+        if(isExpiredRecord(r)){
+          expired += 1;
+          return;
+        }
+        active += 1;
+      });
+      byId('stTotal').textContent = String(total);
+      byId('stActive').textContent = String(active);
+      byId('stExpired').textContent = String(expired);
+      byId('stInactive').textContent = String(inactive);
+    }
+
+    function renderTable(){
+      const q = (byId('searchInput').value || '').trim().toLowerCase();
+      const f = byId('filterStatus').value || 'all';
+      const body = byId('licenseTableBody');
+      const rows = [];
+      let count = 0;
+      state.records.forEach(rec=>{
+        const isExp = isExpiredRecord(rec);
+        const badge = rec.status === 'active' && !isExp ? '<span class="badge ok">active</span>' : '<span class="badge bad">inactive</span>';
+        const effective = isExp ? 'expired' : rec.status;
+        if(f !== 'all' && effective !== f) return;
+        const text = `${rec.key} ${rec.businessName} ${effective} ${rec.root}`.toLowerCase();
+        if(q && !text.includes(q)) return;
+        count += 1;
+        rows.push(
+          `<tr data-id="${escHtml(rec.id)}" class="${rec.id === state.selectedId ? 'active' : ''}">` +
+            `<td class="mono">${escHtml(rec.key)}</td>` +
+            `<td>${escHtml(rec.businessName || '-')}</td>` +
+            `<td>${badge}${isExp ? ' <span class="badge bad">expired</span>' : ''}</td>` +
+            `<td>${escHtml(rec.expiresAt ? new Date(rec.expiresAt).toLocaleString('az-AZ') : 'Muddetsiz')}</td>` +
+            `<td>${escHtml(rec.usedDevices)} / ${escHtml(rec.maxDevices)}</td>` +
+            `<td><span class="badge root">${escHtml(rec.root)}</span></td>` +
+          `</tr>`
+        );
+      });
+      body.innerHTML = rows.join('') || '<tr><td colspan="6" class="muted">Melumat yoxdur</td></tr>';
+      byId('listCountInfo').textContent = `${count} qeyd`;
+      body.querySelectorAll('tr[data-id]').forEach(tr=>{
+        tr.addEventListener('click', ()=>selectRecord(tr.dataset.id));
+      });
+    }
+
+    function getSelectedRecord(){
+      if(!state.selectedId) return null;
+      return state.records.find(x=>x.id === state.selectedId) || null;
+    }
+    function selectRecord(id){
+      const rec = state.records.find(x=>x.id === id);
+      if(!rec) return;
+      state.selectedId = rec.id;
+      byId('edKey').value = rec.key;
+      byId('edRoot').value = rec.root;
+      byId('edStatus').value = rec.status || 'active';
+      byId('edBusiness').value = rec.businessName || '';
+      byId('edExpires').value = toLocalInputValue(rec.expiresAt);
+      byId('edMaxDevices').value = String(rec.maxDevices || 1);
+      byId('edNote').value = rec.note || '';
+      const extra = {};
+      Object.keys(rec.raw || {}).forEach(k=>{
+        if(['status','businessName','company','owner','expiresAt','maxDevices','devices','note','updatedAt','createdAt'].includes(k)) return;
+        extra[k] = rec.raw[k];
+      });
+      byId('edExtra').value = Object.keys(extra).length ? JSON.stringify(extra, null, 2) : '';
+      renderDeviceList(rec);
+      renderTable();
+      setStatusBox(byId('editorMsg'), `Secildi: ${rec.key}`, 'ok');
+    }
+    function newLicenseDraft(){
+      state.selectedId = '';
+      byId('edKey').value = '';
+      byId('edStatus').value = 'active';
+      byId('edBusiness').value = '';
+      byId('edExpires').value = '';
+      byId('edMaxDevices').value = '1';
+      byId('edNote').value = '';
+      byId('edExtra').value = '';
+      if(byId('rootSelect').value !== '__auto__') byId('edRoot').value = byId('rootSelect').value;
+      renderDeviceList(null);
+      renderTable();
+      setStatusBox(byId('editorMsg'), 'Yeni lisenziya ucun hazirdir', '');
+    }
+    function generateLicenseKey(){
+      const y = new Date().getFullYear();
+      const part = ()=>Math.random().toString(36).slice(2, 6).toUpperCase().replace(/[^A-Z0-9]/g,'X');
+      byId('edKey').value = normalizeKey(`MN-${y}-${part()}-${part()}`);
+      setStatusBox(byId('editorMsg'), 'Yeni lisenziya acari yaradildi', 'ok');
+    }
+    function renderDeviceList(rec){
+      const list = byId('deviceList');
+      if(!rec){
+        list.innerHTML = '<div class="muted small">Lisenziya secilmediyi ucun cihaz siyahisi yoxdur</div>';
+        return;
+      }
+      const devices = rec.devices || {};
+      const ids = Object.keys(devices);
+      if(!ids.length){
+        list.innerHTML = '<div class="muted small">Bagli cihaz yoxdur</div>';
+        return;
+      }
+      const html = ids.map(id=>{
+        const item = devices[id] || {};
+        const sub = `bound: ${item.boundAt || '-'} | seen: ${item.lastSeenAt || '-'} | host: ${item.host || '-'}`;
+        return `<div class="device-row">
+          <div class="device-meta">
+            <div class="device-id mono">${escHtml(id)}</div>
+            <div class="device-sub">${escHtml(sub)}</div>
+          </div>
+          <button class="btn bad" data-remove-device="${escHtml(id)}">Sil</button>
+        </div>`;
+      }).join('');
+      list.innerHTML = html;
+      list.querySelectorAll('[data-remove-device]').forEach(btn=>{
+        btn.addEventListener('click', ()=>removeDevice(rec.root, rec.key, btn.getAttribute('data-remove-device') || ''));
+      });
+    }
+    async function removeDevice(root, key, deviceId){
+      if(!deviceId) return;
+      if(!confirm(`Bu cihaz silinsin?\n${deviceId}`)) return;
+      try{
+        await dbRequest('DELETE', `${root}/${key}/devices/${deviceId}`);
+        pushLog(`${key} ucun cihaz silindi: ${deviceId}`, 'ok');
+        await loadLicenses();
+        selectRecord(`${root}::${key}`);
+      }catch(err){
+        setStatusBox(byId('editorMsg'), `Cihaz silme xetasi: ${err.message || err}`, 'bad');
+        pushLog(`Cihaz silme xetasi: ${err.message || err}`, 'bad');
+      }
+    }
+
+    function collectEditorData(){
+      const selected = getSelectedRecord();
+      const key = normalizeKey(byId('edKey').value);
+      const root = byId('edRoot').value || 'rrt_licenses';
+      const status = String(byId('edStatus').value || 'active').toLowerCase();
+      const businessName = String(byId('edBusiness').value || '').trim();
+      const expiresAt = fromLocalInputValue(byId('edExpires').value);
+      const maxDevices = Math.max(1, Math.floor(safeNumber(byId('edMaxDevices').value, 1)));
+      const note = String(byId('edNote').value || '').trim();
+      const extraRaw = String(byId('edExtra').value || '').trim();
+
+      if(!key) throw new Error('Lisenziya acari bos ola bilmez');
+      if(!['active','inactive','suspended'].includes(status)) throw new Error('Status yanlisdir');
+
+      let base = {};
+      if(selected && selected.root === root && selected.key === key){
+        base = { ...(selected.raw || {}) };
+      }
+      base.status = status;
+      base.businessName = businessName;
+      base.expiresAt = expiresAt || '';
+      base.maxDevices = maxDevices;
+      base.note = note;
+      base.updatedAt = nowIso();
+      if(!base.createdAt) base.createdAt = nowIso();
+      if(!base.devices || typeof base.devices !== 'object') base.devices = {};
+
+      if(extraRaw){
+        let extraObj;
+        try{
+          extraObj = JSON.parse(extraRaw);
+        }catch(_){
+          throw new Error('Extra JSON formatinda sehv var');
+        }
+        if(extraObj && typeof extraObj === 'object' && !Array.isArray(extraObj)){
+          Object.keys(extraObj).forEach(k=>{
+            if(['status','businessName','expiresAt','maxDevices','devices','note'].includes(k)) return;
+            base[k] = extraObj[k];
+          });
+        }
+      }
+      return { key, root, data: base };
+    }
+
+    async function saveLicense(){
+      let payload;
+      try{
+        payload = collectEditorData();
+      }catch(err){
+        setStatusBox(byId('editorMsg'), err.message || String(err), 'bad');
+        return;
+      }
+      try{
+        await dbRequest('PUT', `${payload.root}/${payload.key}`, payload.data);
+        pushLog(`Lisenziya yadda saxlanildi: ${payload.key} (${payload.root})`, 'ok');
+        setStatusBox(byId('editorMsg'), 'Ugurlu: lisenziya yadda saxlanildi', 'ok');
+        await loadLicenses();
+        selectRecord(`${payload.root}::${payload.key}`);
+      }catch(err){
+        setStatusBox(byId('editorMsg'), `Yazma xetasi: ${err.message || err}`, 'bad');
+        pushLog(`Yazma xetasi: ${err.message || err}`, 'bad');
+      }
+    }
+    async function deleteLicense(){
+      const rec = getSelectedRecord();
+      if(!rec){
+        setStatusBox(byId('editorMsg'), 'Silmek ucun once lisenziya secin', 'bad');
+        return;
+      }
+      if(!confirm(`Lisenziya silinsin?\n${rec.key} (${rec.root})`)) return;
+      try{
+        await dbRequest('DELETE', `${rec.root}/${rec.key}`);
+        pushLog(`Lisenziya silindi: ${rec.key} (${rec.root})`, 'ok');
+        await loadLicenses();
+        newLicenseDraft();
+      }catch(err){
+        setStatusBox(byId('editorMsg'), `Silme xetasi: ${err.message || err}`, 'bad');
+        pushLog(`Silme xetasi: ${err.message || err}`, 'bad');
+      }
+    }
+    async function resetDevices(){
+      const key = normalizeKey(byId('edKey').value);
+      const root = byId('edRoot').value || 'rrt_licenses';
+      if(!key){
+        setStatusBox(byId('editorMsg'), 'Once lisenziya acari daxil edin', 'bad');
+        return;
+      }
+      if(!confirm(`${key} ucun butun cihaz baglantilari silinsin?`)) return;
+      try{
+        await dbRequest('PUT', `${root}/${key}/devices`, {});
+        pushLog(`${key} ucun cihazlar sifirlandi`, 'ok');
+        setStatusBox(byId('editorMsg'), 'Cihazlar sifirlandi', 'ok');
+        await loadLicenses();
+        selectRecord(`${root}::${key}`);
+      }catch(err){
+        setStatusBox(byId('editorMsg'), `Cihaz sifirlama xetasi: ${err.message || err}`, 'bad');
+        pushLog(`Cihaz sifirlama xetasi: ${err.message || err}`, 'bad');
+      }
+    }
+
+    function normalizeVersion(v){
+      return String(v || '').trim().replace(/^v/i, '');
+    }
+    function versionToKey(v){
+      return normalizeVersion(v).replace(/[^0-9A-Za-z.-]/g, '-').replace(/\./g, '_');
+    }
+    function setUpdateMsg(text, kind){
+      setStatusBox(byId('updateMsg'), text, kind);
+    }
+    function newUpdateDraft(){
+      state.selectedUpdateChannel = '';
+      byId('upChannel').value = 'production';
+      byId('upVersion').value = '';
+      byId('upMinVersion').value = '';
+      byId('upForceAfter').value = '';
+      byId('upGraceDays').value = '7';
+      byId('upPolicy').value = 'optional';
+      byId('upDownloadUrl').value = '';
+      byId('upNotes').value = '';
+      setUpdateMsg('Yeni update draft hazirdir', '');
+      renderUpdateTable();
+    }
+    function collectUpdatePayload(){
+      const channel = String(byId('upChannel').value || 'production').trim();
+      const version = normalizeVersion(byId('upVersion').value);
+      const minVersion = normalizeVersion(byId('upMinVersion').value);
+      const forceAfter = fromLocalInputValue(byId('upForceAfter').value);
+      const graceDays = Math.max(0, Math.min(365, Math.floor(safeNumber(byId('upGraceDays').value, 7))));
+      const policy = String(byId('upPolicy').value || 'optional');
+      const downloadUrl = String(byId('upDownloadUrl').value || '').trim();
+      const notes = String(byId('upNotes').value || '').trim();
+      if(!channel) throw new Error('Kanal bos ola bilmez');
+      if(!version) throw new Error('Versiya bos ola bilmez');
+      if(!downloadUrl) throw new Error('Download/Github URL bos ola bilmez');
+      if(!/^https?:\/\//i.test(downloadUrl)) throw new Error('URL http:// ve ya https:// ile baslamalidir');
+      return {
+        channel,
+        data: {
+          version,
+          minVersion: minVersion || version,
+          policy,
+          forceAfter: forceAfter || '',
+          graceDays,
+          downloadUrl,
+          notes,
+          publishedAt: nowIso(),
+          updatedAt: nowIso()
+        }
+      };
+    }
+    function renderUpdateTable(){
+      const body = byId('updateTableBody');
+      const rows = [];
+      (state.updates || []).forEach(up=>{
+        rows.push(
+          `<tr data-up-channel="${escHtml(up.channel)}" class="${up.channel === state.selectedUpdateChannel ? 'active' : ''}">` +
+            `<td>${escHtml(up.channel)}</td>` +
+            `<td>${escHtml(up.version || '-')}</td>` +
+            `<td>${escHtml(up.policy || '-')}</td>` +
+            `<td>${escHtml(up.forceAfter ? new Date(up.forceAfter).toLocaleString('az-AZ') : '-')}</td>` +
+            `<td>${escHtml(String(up.graceDays ?? '-'))}</td>` +
+          `</tr>`
+        );
+      });
+      body.innerHTML = rows.join('') || '<tr><td colspan="5" class="muted">Yenileme qaydasi yoxdur</td></tr>';
+      body.querySelectorAll('tr[data-up-channel]').forEach(tr=>{
+        tr.addEventListener('click', ()=>selectUpdatePlan(tr.getAttribute('data-up-channel') || ''));
+      });
+    }
+    function selectUpdatePlan(channel){
+      const rec = (state.updates || []).find(x=>x.channel === channel);
+      if(!rec) return;
+      state.selectedUpdateChannel = rec.channel;
+      byId('upChannel').value = rec.channel;
+      byId('upVersion').value = rec.version || '';
+      byId('upMinVersion').value = rec.minVersion || '';
+      byId('upForceAfter').value = toLocalInputValue(rec.forceAfter);
+      byId('upGraceDays').value = String(rec.graceDays ?? 7);
+      byId('upPolicy').value = rec.policy || 'optional';
+      byId('upDownloadUrl').value = rec.downloadUrl || '';
+      byId('upNotes').value = rec.notes || '';
+      setUpdateMsg(`Secildi: ${rec.channel}`, 'ok');
+      renderUpdateTable();
+    }
+    async function loadUpdatePlans(){
+      saveDbPrefs();
+      try{
+        const map = await dbRequest('GET', 'rrt_updates');
+        const list = [];
+        if(map && typeof map === 'object'){
+          Object.keys(map).forEach(ch=>{
+            const raw = map[ch];
+            if(raw && typeof raw === 'object'){
+              list.push({
+                channel: ch,
+                version: String(raw.version || ''),
+                minVersion: String(raw.minVersion || ''),
+                policy: String(raw.policy || 'optional'),
+                forceAfter: String(raw.forceAfter || ''),
+                graceDays: Math.max(0, Math.floor(safeNumber(raw.graceDays, 7))),
+                downloadUrl: String(raw.downloadUrl || ''),
+                notes: String(raw.notes || ''),
+                raw
+              });
+            }
+          });
+        }
+        list.sort((a,b)=>a.channel.localeCompare(b.channel));
+        state.updates = list;
+        renderUpdateTable();
+        setUpdateMsg(`${list.length} update qaydasi oxundu`, 'ok');
+        if(state.selectedUpdateChannel){
+          const found = list.find(x=>x.channel === state.selectedUpdateChannel);
+          if(found) selectUpdatePlan(found.channel);
+        }
+      }catch(err){
+        const text = String(err && err.message ? err.message : err);
+        const hint = /401|permission denied|unauthorized/i.test(text)
+          ? `${text} | rrt_updates ucun icaze lazimdir (rules/auth)`
+          : text;
+        setUpdateMsg(hint, 'bad');
+        pushLog(`Update panel xetasi: ${hint}`, 'bad');
+      }
+    }
+    async function saveUpdatePlan(){
+      saveDbPrefs();
+      let payload;
+      try{
+        payload = collectUpdatePayload();
+      }catch(err){
+        setUpdateMsg(err.message || String(err), 'bad');
+        return;
+      }
+      try{
+        await dbRequest('PUT', `rrt_updates/${payload.channel}`, payload.data);
+        const hKey = versionToKey(payload.data.version || nowIso());
+        await dbRequest('PUT', `rrt_update_history/${payload.channel}/${hKey}`, {
+          ...payload.data,
+          historyAt: nowIso()
+        });
+        setUpdateMsg(`Yenileme yayimlandi: ${payload.channel} -> ${payload.data.version}`, 'ok');
+        pushLog(`Update yayimi edildi: ${payload.channel} ${payload.data.version}`, 'ok');
+        state.selectedUpdateChannel = payload.channel;
+        await loadUpdatePlans();
+      }catch(err){
+        const text = String(err && err.message ? err.message : err);
+        setUpdateMsg(`Yazma xetasi: ${text}`, 'bad');
+        pushLog(`Update yazma xetasi: ${text}`, 'bad');
+      }
+    }
+    async function deleteUpdatePlan(){
+      saveDbPrefs();
+      const channel = String(byId('upChannel').value || '').trim();
+      if(!channel){
+        setUpdateMsg('Silmek ucun kanal secin', 'bad');
+        return;
+      }
+      if(!confirm(`Update qaydasi silinsin?\nKanal: ${channel}`)) return;
+      try{
+        await dbRequest('DELETE', `rrt_updates/${channel}`);
+        setUpdateMsg(`Kanal silindi: ${channel}`, 'ok');
+        pushLog(`Update kanali silindi: ${channel}`, 'ok');
+        state.selectedUpdateChannel = '';
+        await loadUpdatePlans();
+      }catch(err){
+        const text = String(err && err.message ? err.message : err);
+        setUpdateMsg(`Silme xetasi: ${text}`, 'bad');
+        pushLog(`Update silme xetasi: ${text}`, 'bad');
+      }
+    }
+
+    function loadUiPrefs(){
+      try{
+        const parsed = JSON.parse(localStorage.getItem(LS.ui) || '{}');
+        state.ui = { ...DEFAULT_UI, ...(parsed && typeof parsed === 'object' ? parsed : {}) };
+      }catch(_){
+        state.ui = { ...DEFAULT_UI };
+      }
+      byId('uiTheme').value = state.ui.theme;
+      byId('uiAccent').value = state.ui.accent;
+      byId('uiCursorMode').value = state.ui.cursorMode;
+      byId('uiTrailMode').value = state.ui.trailMode;
+      byId('uiTrailColor').value = state.ui.trailColor;
+      byId('uiTrailSize').value = String(state.ui.trailSize);
+      byId('uiTrailLife').value = String(state.ui.trailLife);
+      byId('uiLogoUrl').value = state.ui.logoUrl || '';
+      applyUiPrefs();
+    }
+    function saveUiPrefs(){
+      state.ui.theme = byId('uiTheme').value || 'dark';
+      state.ui.accent = byId('uiAccent').value || '#2dd4bf';
+      state.ui.cursorMode = byId('uiCursorMode').value || 'default';
+      state.ui.trailMode = byId('uiTrailMode').value || 'none';
+      state.ui.trailColor = byId('uiTrailColor').value || '#5f86ff';
+      state.ui.trailSize = Math.max(4, Math.min(48, Math.floor(safeNumber(byId('uiTrailSize').value, 18))));
+      state.ui.trailLife = Math.max(120, Math.min(2200, Math.floor(safeNumber(byId('uiTrailLife').value, 800))));
+      state.ui.logoUrl = String(byId('uiLogoUrl').value || '').trim();
+      localStorage.setItem(LS.ui, JSON.stringify(state.ui));
+      applyUiPrefs();
+      setStatusBox(byId('editorMsg'), 'UI ayarlari yadda saxlanildi', 'ok');
+      pushLog('UI/tema/kursor/logo ayarlari yenilendi', 'ok');
+    }
+    function clearLogo(){
+      byId('uiLogoUrl').value = '';
+      state.ui.logoUrl = '';
+      saveUiPrefs();
+    }
+    function applyUiPrefs(){
+      const root = document.documentElement;
+      root.style.setProperty('--accent', state.ui.accent || DEFAULT_UI.accent);
+      const body = document.body;
+      body.dataset.cursorMode = state.ui.cursorMode || 'default';
+
+      const theme = state.ui.theme || 'dark';
+      if(theme === 'light'){
+        root.style.setProperty('--bg', '#eef3ff');
+        root.style.setProperty('--bg-soft', '#f7f9ff');
+        root.style.setProperty('--card', '#ffffff');
+        root.style.setProperty('--card-2', '#f4f7ff');
+        root.style.setProperty('--text', '#13213d');
+        root.style.setProperty('--muted', '#5b6a8d');
+        root.style.setProperty('--border', '#ced8f0');
+        body.style.background = 'radial-gradient(1200px 700px at 85% -10%, #b8d5ff 0%, #eef3ff 56%)';
+      }else if(theme === 'ocean'){
+        root.style.setProperty('--bg', '#071018');
+        root.style.setProperty('--bg-soft', '#0a1c2b');
+        root.style.setProperty('--card', '#102235');
+        root.style.setProperty('--card-2', '#0d1a2c');
+        root.style.setProperty('--text', '#e9f6ff');
+        root.style.setProperty('--muted', '#8bb3ca');
+        root.style.setProperty('--border', '#204a66');
+        body.style.background = 'radial-gradient(1200px 700px at 85% -10%, #0b4a66 0%, #071018 56%)';
+      }else if(theme === 'emerald'){
+        root.style.setProperty('--bg', '#070f0b');
+        root.style.setProperty('--bg-soft', '#102019');
+        root.style.setProperty('--card', '#12271d');
+        root.style.setProperty('--card-2', '#102219');
+        root.style.setProperty('--text', '#e9fff1');
+        root.style.setProperty('--muted', '#93c6aa');
+        root.style.setProperty('--border', '#27543e');
+        body.style.background = 'radial-gradient(1200px 700px at 85% -10%, #0d5f45 0%, #070f0b 56%)';
+      }else{
+        root.style.setProperty('--bg', '#090b10');
+        root.style.setProperty('--bg-soft', '#0f131d');
+        root.style.setProperty('--card', '#121826');
+        root.style.setProperty('--card-2', '#171f2f');
+        root.style.setProperty('--text', '#e7ecf7');
+        root.style.setProperty('--muted', '#9ca7be');
+        root.style.setProperty('--border', '#26324c');
+        body.style.background = 'radial-gradient(1200px 700px at 85% -10%, #103047 0%, #090b10 56%)';
+      }
+
+      const logo = String(state.ui.logoUrl || '').trim();
+      byId('logoPreview').style.backgroundImage = logo ? `url("${logo.replace(/"/g, '\\"')}")` : 'none';
+      byId('brandLogo').style.backgroundImage = logo ? `url("${logo.replace(/"/g, '\\"')}")` : 'none';
+    }
+
+    function handleLogoFilePick(ev){
+      const file = ev.target && ev.target.files && ev.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(){
+        const dataUrl = String(reader.result || '');
+        byId('uiLogoUrl').value = dataUrl;
+        saveUiPrefs();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function maybeSpawnTrail(ev){
+      if(state.ui.trailMode === 'none') return;
+      const layer = byId('cursorTrailLayer');
+      if(!layer) return;
+      const now = performance.now();
+      const x = ev.clientX;
+      const y = ev.clientY;
+      const dx = x - trailLastX;
+      const dy = y - trailLastY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if(now - trailLastTime < 26 || dist < 8) return;
+      trailLastTime = now;
+      trailLastX = x;
+      trailLastY = y;
+
+      const dot = document.createElement('div');
+      dot.className = `cursor-trail-dot ${state.ui.trailMode === 'spark' ? 'trail-spark' : 'trail-glow'}`;
+      dot.style.left = `${x}px`;
+      dot.style.top = `${y}px`;
+      dot.style.setProperty('--trail-color', state.ui.trailColor || '#5f86ff');
+      dot.style.width = `${state.ui.trailSize || 18}px`;
+      dot.style.height = `${state.ui.trailSize || 18}px`;
+      dot.style.animationDuration = `${state.ui.trailLife || 800}ms`;
+      layer.appendChild(dot);
+      setTimeout(()=>dot.remove(), Math.max(150, (state.ui.trailLife || 800) + 80));
+    }
+
+    function bindEvents(){
+      byId('loginPassword').addEventListener('keydown', (ev)=>{
+        if(ev.key === 'Enter') adminLogin();
+      });
+      byId('uiLogoFile').addEventListener('change', handleLogoFilePick);
+      byId('uiTheme').addEventListener('change', saveUiPrefs);
+      byId('uiAccent').addEventListener('change', saveUiPrefs);
+      byId('uiCursorMode').addEventListener('change', saveUiPrefs);
+      byId('uiTrailMode').addEventListener('change', saveUiPrefs);
+      byId('uiTrailColor').addEventListener('change', saveUiPrefs);
+      byId('uiTrailSize').addEventListener('change', saveUiPrefs);
+      byId('uiTrailLife').addEventListener('change', saveUiPrefs);
+      byId('uiLogoUrl').addEventListener('change', saveUiPrefs);
+      byId('upChannel').addEventListener('change', ()=>{
+        const ch = String(byId('upChannel').value || '');
+        if((state.updates || []).some(x=>x.channel === ch)){
+          selectUpdatePlan(ch);
+        }
+      });
+      document.addEventListener('pointermove', maybeSpawnTrail, { passive: true });
+    }
+
+    async function init(){
+      bindEvents();
+      loadLogs();
+      await ensureAdminPassword();
+      loadDbPrefs();
+      loadUiPrefs();
+      setStatusBox(byId('loginMsg'), 'Admin parolu daxil edin', '');
+      setStatusBox(byId('pwdMsg'), 'Parol blokunda deyisiklik edilmeyib', '');
+      setStatusBox(byId('editorMsg'), 'Panel hazirdir', '');
+      setUpdateMsg('Yenileme paneli hazirdir', '');
+      newUpdateDraft();
+      if(isSessionValid()){
+        openAppShell();
+        pushLog('Sessiya aktiv oldugu ucun avtomatik giris edildi', 'ok');
+        await loadLicenses();
+        await loadUpdatePlans();
+      }else{
+        openLoginGate();
+      }
+      pushLog(`Panel yuklendi (${nowLabel()})`);
+    }
+
+    window.adminLogin = adminLogin;
+    window.logoutAdmin = logoutAdmin;
+    window.changeAdminPassword = changeAdminPassword;
+    window.saveDbPrefs = saveDbPrefs;
+    window.loadLicenses = loadLicenses;
+    window.loadLicenseByKeyFromInput = loadLicenseByKeyFromInput;
+    window.newLicenseDraft = newLicenseDraft;
+    window.generateLicenseKey = generateLicenseKey;
+    window.saveLicense = saveLicense;
+    window.deleteLicense = deleteLicense;
+    window.resetDevices = resetDevices;
+    window.newUpdateDraft = newUpdateDraft;
+    window.saveUpdatePlan = saveUpdatePlan;
+    window.loadUpdatePlans = loadUpdatePlans;
+    window.deleteUpdatePlan = deleteUpdatePlan;
+    window.clearLogo = clearLogo;
+    window.saveUiPrefs = saveUiPrefs;
+    window.clearLogs = clearLogs;
+
+    init().catch(err=>{
+      console.error(err);
+      setStatusBox(byId('loginMsg'), `Init xetasi: ${err.message || err}`, 'bad');
+    });
+  </script>
+</body>
+</html>
