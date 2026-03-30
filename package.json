@@ -1,6 +1,6 @@
 {
   "name": "mn-sushi-pos",
-  "version": "1.2.0",
+  "version": "1.1.1",
   "private": true,
   "description": "MN Sushi POS desktop wrapper",
   "main": "electron/main.js",
